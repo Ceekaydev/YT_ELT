@@ -1,16 +1,20 @@
 import requests
 import json
-from dotenv import load_dotenv
-import os
+# from dotenv import load_dotenv
+# load_dotenv(dotenv_path="./.env")
+# import os
+
 from datetime import date
 
+from airflow.sdk import task
+from airflow.sdk import Variable
 
-load_dotenv()
 
 
-API_KEY = os.getenv("API_KEY")
-channel_name = "MrBeast"
+API_KEY = Variable.get("API_KEY")
+channel_name = Variable,get("MrBeast")
 maxResults = 50
+
 
 def get_playlist_id():
 
