@@ -69,7 +69,8 @@ x-airflow-common:
     # Set to false to remove default DAGs - https://stackoverflow.com/questions/43410836/how-to-remove-default-example-dags-in-airflow
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     # Configure authentication backends. Enable basic & session-based authentication
-    AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
+    AIRFLOW__API__AUTH_BACKENDS: "airflow.api.auth.backend.fab"
+    AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
     # Enable health checks for the scheduler
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
     AIRFLOW__WEBSERVER__AUTHENTICATE: "True"
