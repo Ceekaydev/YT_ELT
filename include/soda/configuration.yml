@@ -1,0 +1,8 @@
+data_source pg_datasource:
+  type: postgres
+  host: ${POSTGRES_CONN_HOST}
+  port: ${POSTGRES_CONN_PORT}
+  username: ${POSTGRES_CONN_USERNAME}
+  password: ${POSTGRES_CONN_PASSWORD}
+  database: ${ELT_DATABASE_NAME}
+  schema: ${SCHEMA}

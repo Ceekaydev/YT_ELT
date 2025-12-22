@@ -5,3 +5,5 @@ logs/
 generate_fernet.py
 my_yt_utils/
 my_yt_utils.egg-info/
+setup.py
+test.py

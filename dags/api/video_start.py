@@ -112,23 +112,23 @@ def extract_video_data(video_ids):
 
             data = response.json()
 
-        for item in data.get("items", []):
-            video_id = item["id"]
-            snippet = item["snippet"]
-            contentDetails = item["contentDetails"]
-            statistics = item["statistics"]
+            for item in data.get("items", []):
+                video_id = item["id"]
+                snippet = item["snippet"]
+                contentDetails = item["contentDetails"]
+                statistics = item["statistics"]
 
-            video_data = {
-                "video_id" : video_id,
-                "title": snippet["title"],
-                "publishedAt": snippet["publishedAt"],
-                "duration": contentDetails["duration"],
-                "viewCount": statistics.get("viewCount", None),
-                "likeCount": statistics.get("likeCount", None),
-                "commentCount": statistics.get("commentCount", None)
-            }
+                video_data = {
+                    "video_id" : video_id,
+                    "title": snippet["title"],
+                    "publishedAt": snippet["publishedAt"],
+                    "duration": contentDetails["duration"],
+                    "viewCount": statistics.get("viewCount", None),
+                    "likeCount": statistics.get("likeCount", None),
+                    "commentCount": statistics.get("commentCount", None)
+                }
 
-            extracted_data.append(video_data)
+                extracted_data.append(video_data)
 
         return extracted_data
 
