@@ -101,5 +101,5 @@ jobs:
             - name: Tear down docker compose
               if: always() && steps.changed-files-tests.outputs.any_changed == 'true'
               run: |
-               docker compose down --remove-orphans || true
+               docker compose down
                         
