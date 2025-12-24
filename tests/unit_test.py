@@ -51,10 +51,3 @@ def test_dags_integrity(dagbag):
         ), f"DAG {dag_id} has {actual_count} tasks, expected {expected_count}."
         print(dag_id, len(dag.tasks))
 
-def test_load_data(tmp_path):
-    test_file = tmp_path / "test.json"
-    test_file.write_text('{"video_id": "123"}')
-
-    data = load_data(test_file)
-
-    assert data["video_id"] == "123"

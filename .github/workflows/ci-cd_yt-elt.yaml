@@ -90,7 +90,7 @@ jobs:
             - name: Run unit and integration Tests
               if: steps.changed-files-tests.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
               run: |
-                docker exec -t airflow-worker sh -c "export PYTHONPATH=/opt && pytest tests/ -v"
+                docker exec -t airflow-worker sh -c pytest tests/ -v"
             - name: Run End-to-End DAG Tests
               if: steps.changed-files-tests.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
               # In production, this would be dynamically derived from changed DAG files.
