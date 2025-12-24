@@ -4,12 +4,10 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def load_data():
+def load_data(file_path):
 
-    file_path = f"./data/Yt_data_{date.today().isoformat()}.json"
 
     try:
-        logger.info(f"Processing file: YT_data_{date.today().isoformat()}")
 
         with open(file_path, 'r', encoding='utf-8') as raw_data:
             data = json.load(raw_data)

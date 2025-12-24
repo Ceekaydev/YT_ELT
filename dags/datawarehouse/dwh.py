@@ -14,9 +14,13 @@ hf_call_count = 0
 
 
 @task
-def staging_table():
+def staging_table(**context):
 
     schema = "staging"
+
+    ds = context[ds]  # Airflow execution date
+
+    file_path = f"/opt/airflow/data/Yt_data_{ds}.json"
 
     conn, cur = None, None
 
@@ -24,7 +28,8 @@ def staging_table():
 
         conn, cur = get_conn_cursor()
 
-        YT_data = load_data()
+
+        YT_data = load_data(file_path)
 
         create_schema(schema)
         create_table(schema)
