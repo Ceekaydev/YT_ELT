@@ -18,7 +18,7 @@ def staging_table(**context):
 
     schema = "staging"
 
-    ds = context[ds]  # Airflow execution date
+    ds = context["ds"]  # Airflow execution date
 
     file_path = f"/opt/airflow/data/Yt_data_{ds}.json"
 

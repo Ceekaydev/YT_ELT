@@ -1,4 +1,3 @@
-from dags.datawarehouse.data_loading import load_data
 def test_api_keys(api_keys):
     assert api_keys["youtube"] == "MOCK_KEY1234"
     assert api_keys["huggingface"] == "MOCK_HF_KEY1234"
