@@ -4,6 +4,7 @@
 from airflow import DAG
 import pendulum
 from datetime import datetime, timedelta
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 
 # sys.path.insert(0, os.path.join(os.environ['AIRFLOW_HOME'], 'dags'))
 # sys.path.insert(0, os.path.join(os.environ['AIRFLOW_HOME'], 'plugins'))
@@ -36,13 +37,14 @@ default_args = {
     # "end_date": datetime(2030, 12, 31, tzinfo=local_tz),
 }
 
+# DAG 1: produce_json
 with DAG(
     dag_id="produce_json",
     default_args=default_args,
     description="DAG to produce JSON file with raw data",
     schedule= '0 14 * * *',
     catchup=False
-) as dag:
+) as dag_produce:
     
     # DEFINE TASK
     playlist_id_task = get_playlist_id()
@@ -50,17 +52,22 @@ with DAG(
     extract_data_task = extract_video_data(video_ids_task)
     save_to_json_format_task = save_to_json(extract_data_task)
 
+    trigger_update_db = TriggerDagRunOperator(
+        task_id="trigger_Update_db",
+        trigger_dag_id="Update_db",
+    )
+
     # define dependencies
-    playlist_id_task >> video_ids_task >> extract_data_task >> save_to_json_format_task
+    playlist_id_task >> video_ids_task >> extract_data_task >> save_to_json_format_task >> trigger_update_db
 
-
+# DAG 2: update db
 with DAG(
     dag_id="Update_db",
     default_args=default_args,
     description="DAG to process JSON File and insert data into both staging and core schema",
-    schedule= '0 15 * * *',
+    schedule=None,
     catchup=False
-) as dag:
+) as dag_update:
     
     
     # DEFINE TASK
@@ -68,20 +75,24 @@ with DAG(
     update_staging_table = staging_table()
     update_core_table = core_table()
 
+    trigger_data_quality = TriggerDagRunOperator(
+        task_id="trigger_data_quality",
+        trigger_dag_id="data_quality",
+    )
+
     # define dependencies
-    update_staging_table >> update_core_table
+    update_staging_table >> update_core_table >> trigger_data_quality
 
 
-
+# DAG 3: data quality
 with DAG(
     dag_id="data_quality",
     default_args=default_args,
     description="DAG to perform data quality checks using Soda on both dch schemas",
-    schedule= '0 16 * * *',
+    schedule=None,
     catchup=False
-) as dag:
-    
-    
+) as dag_quality:
+       
     # DEFINE TASK
 
     data_validate_staging = yt_elt_data_quality(staging_schema)

@@ -13,7 +13,6 @@ HF_HEADERS = {
     "Authorization": f"Bearer {HF_API_KEY}"
 }
 
-
 HF_CALL_DELAY = 0.25
 MAX_HF_CALLS = 900
 hf_call_count = 0

@@ -1,0 +1,28 @@
+checks for yt_api:
+  - missing_count("Video_ID") = 0
+  - duplicate_count("Video_ID") = 0
+
+  - neutral_sentiment_over_90_percent <= 0.9:
+      name: "Fail if over 90% of sentiment are natural"
+      neutral_sentiment_over_90_percent query: |
+        SELECT
+          CASE
+            WHEN COUNT(*) = 0  THEN 0
+            ELSE
+              (COUNT(*) FILTER (WHERE "Title_Sentiment" = 'Neutral')::float
+              / COUNT(*))
+          END
+        FROM core.yt_api
+
+    
+  - zero_sentiment_score_over_90_percent <= 0.9:
+      name: "Fail if over 90% of sentiment scores are zero"
+      zero_sentiment_score_over_90_percent query: |
+        SELECT
+          CASE
+            WHEN COUNT(*) = 0 THEN 0
+          ELSE
+            (COUNT(*) FILTER (WHERE "Sentiment_Score" = 0)::float
+            / COUNT(*))
+          END
+        FROM core.yt_api
