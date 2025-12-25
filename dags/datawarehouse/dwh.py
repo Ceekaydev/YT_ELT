@@ -23,7 +23,7 @@ def staging_table(**context):
     if not conf or "file_path" not in conf:
         raise ValueError("file_path not provided from upstream DAG")
     
-    file_path = conf["file_path"]
+    file_path = conf.get("file_path")
 
     if not os.path.exists(file_path):
         raise FileExistsError(f"Expected file not found: {file_path}")
