@@ -53,7 +53,7 @@ with DAG(
     extract_data_task = extract_video_data(video_ids_task)
     save_to_json_format_task = save_to_json(extract_data_task)
 
-    def push_conf_to_trigger(context, **kwargs):
+    def push_conf_to_trigger(**context):
         # Retrieve the Task Instance (ti) object from the context
         ti = context['ti'] 
         
