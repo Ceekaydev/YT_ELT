@@ -55,7 +55,7 @@ with DAG(
     trigger_update_db = TriggerDagRunOperator(
         task_id="trigger_Update_db",
         trigger_dag_id="Update_db",
-        conf="{{ ti.xcom_pull(task_ids='save_to_json_format_task')['file_path'] }}"
+        conf={"file_path": save_to_json_format_task.output["file_path"]}
     )
 
     # define dependencies
