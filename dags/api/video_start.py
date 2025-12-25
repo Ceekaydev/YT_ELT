@@ -2,7 +2,7 @@ import requests
 import json
 # from dotenv import load_dotenv
 # load_dotenv(dotenv_path="./.env")
-# import os
+import os
 
 from datetime import date
 
@@ -137,11 +137,23 @@ def extract_video_data(video_ids):
         print(f"Error: {e}")
 
 @task
-def save_to_json(extracted_data):
-    filepath = f"./data/YT_data_{date.today()}.json"
+def save_to_json(extracted_data, **context):
+
+    execution_date = context["logical_date"].strftime("%Y-%m-%d")
+
+    os.makedirs("/opt/airflow/data", exist_ok=True)
+
+    filepath = f"./data/YT_data_{execution_date}.json"
     
     with open(filepath, "w", encoding="utf-8") as json_outfile:
         json.dump(extracted_data, json_outfile, indent=4, ensure_ascii=False)
+
+    return {
+        
+        "file_path": filepath,
+        "execution_date": execution_date
+    }
+
 
 
 

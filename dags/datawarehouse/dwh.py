@@ -5,6 +5,7 @@ from datawarehouse.data_loading import load_data
 
 import logging
 from airflow.decorators import task
+import os
 
 logger = logging.getLogger(__name__)
 table = "yt_api"
@@ -17,16 +18,22 @@ hf_call_count = 0
 def staging_table(**context):
 
     schema = "staging"
+    conf = context["dag_run"].conf
 
-    ds = context["ds"]  # Airflow execution date
+    if not conf or "file_path" not in conf:
+        raise ValueError("file_path not provided from upstream DAG")
+    
+    file_path = conf["file_path"]
 
-    file_path = f"/opt/airflow/data/Yt_data_{ds}.json"
+    if not os.path.exists(file_path):
+        raise FileExistsError(f"Expected file not found: {file_path}")
 
     conn, cur = None, None
 
     try:
 
         conn, cur = get_conn_cursor()
+
 
 
         YT_data = load_data(file_path)
