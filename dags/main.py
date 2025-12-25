@@ -5,6 +5,7 @@ from airflow import DAG
 import pendulum
 from datetime import datetime, timedelta
 from airflow.operators.trigger_dagrun import TriggerDagRunOperator
+from airflow.operators.python import PythonOperator
 
 # sys.path.insert(0, os.path.join(os.environ['AIRFLOW_HOME'], 'dags'))
 # sys.path.insert(0, os.path.join(os.environ['AIRFLOW_HOME'], 'plugins'))
@@ -52,18 +53,37 @@ with DAG(
     extract_data_task = extract_video_data(video_ids_task)
     save_to_json_format_task = save_to_json(extract_data_task)
 
+    def push_conf_to_trigger(context, **kwargs):
+        # Retrieve the Task Instance (ti) object from the context
+        ti = context['ti'] 
+        
+        # Pull the value pushed to XCom by the specified task ID
+        saved = ti.xcom_pull(task_ids='save_to_json_format_task') 
+        
+        # Check if the XCom value exists, raise an error if not
+        if not saved:
+            raise ValueError("file_path XCom is missing") 
+            
+        # The return value is automatically pushed to XCom for this task
+        return saved 
+
+    # Define the PythonOperator within an Airflow DAG context
+    push_conf_task = PythonOperator(
+        task_id='prepare_trigger_conf',
+        python_callable=push_conf_to_trigger,
+        # Ensure this operator is part of a valid Airflow DAG definition
+        # dag=my_dag, 
+    )
+
 
     trigger_update_db = TriggerDagRunOperator(
         task_id="trigger_Update_db",
         trigger_dag_id="Update_db",
-        conf={
-            "file_path": "{{ ti.xcom_pull(task_ids='save_to_json_format_task')['file_path'] }}",
-            "execution_date": "{{ ti.xcom_pull(task_ids='save_to_json_format_task')['execution_date'] }}"
-        }
+        conf="{{ ti.xcom_pull(task_ids='prepare_trigger_conf') }}",
     )
 
     # define dependencies
-    playlist_id_task >> video_ids_task >> extract_data_task >> save_to_json_format_task >> trigger_update_db
+    playlist_id_task >> video_ids_task >> extract_data_task >> save_to_json_format_task >> push_conf_task >> trigger_update_db
 
 # DAG 2: update db
 with DAG(

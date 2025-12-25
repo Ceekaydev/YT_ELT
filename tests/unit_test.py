@@ -36,7 +36,7 @@ def test_dags_integrity(dagbag):
 
     # forth - expected tasks in each dags
     expected_task_counts = {
-        "produce_json": 5,
+        "produce_json": 6,
         "Update_db": 3,
         "data_quality": 2,
     }
