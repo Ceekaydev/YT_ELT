@@ -52,10 +52,19 @@ with DAG(
     extract_data_task = extract_video_data(video_ids_task)
     save_to_json_format_task = save_to_json(extract_data_task)
 
+    def trigger_update_db_callable(context, dag_run_obj):
+        ti = context["ti"]
+        saved = ti.xcom_pull(task_ids="save_to_json_format_task")
+        if not saved or "file_path" not in saved:
+            raise ValueError("file_path XCom is missing")
+
+        dag_run_obj.payload = {"file_path": saved["file_path"]}
+        return dag_run_obj  # ✅ return is required
+
     trigger_update_db = TriggerDagRunOperator(
         task_id="trigger_Update_db",
         trigger_dag_id="Update_db",
-        conf=save_to_json_format_task.output
+        python_callable=trigger_update_db_callable
     )
 
     # define dependencies
