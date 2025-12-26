@@ -142,7 +142,10 @@ def save_to_json(extracted_data, **context):
 
     execution_date = context["logical_date"].strftime("%Y-%m-%d")
 
-    os.makedirs("/opt/airflow/data", exist_ok=True)
+    # Make this configurable for testing
+    data_dir = os.getenv("AIRFLOW_DATA_DIR", "/opt/airflow/data")
+
+    os.makedirs(data_dir, exist_ok=True)
 
     filepath = f"/opt/airflow/data/YT_data_{execution_date}.json"
     

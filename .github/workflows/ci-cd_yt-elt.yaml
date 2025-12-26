@@ -94,10 +94,28 @@ jobs:
               if: steps.changed-files-tests.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
               # In production, this would be dynamically derived from changed DAG files.
               run: |
-                DAG_NAMES=("produce_json" "Update_db" "data_quality")
-                for DAG in "${DAG_NAMES[@]}"; do
-                  docker exec -t airflow-worker sh -c "airflow dags test $DAG"
-                done
+                docker exec -t airflow-worker sh -c "mkdir -p /opt/airflow/data"
+
+                echo "=== Running produce_json DAG ==="
+                docker exec -t airflow-worker sh -c "airflow dags test produce_json"
+
+                EXECUTION_DATE=$(date +%Y-%m-%d)
+                FILE_PATH="/opt/airflow/data/YT_data_${EXECUTION_DATE}.json"
+
+                echo "=== Verifying file exists at ${FILE_PATH} ==="
+                docker exec -t airflow-worker sh -c "test -f ${FILE_PATH} || (echo 'ERROR: File not found' && ls -la /opt/airflow/data && exit 1)"
+
+                echo "=== File verified. Contents preview: ==="
+                docker exec -t airflow-worker sh -c "head -n 5 ${FILE_PATH}"
+
+                echo "=== Running Update_db DAG with file_path ==="
+                docker exec -t airflow-worker sh -c "airflow dags test Update_db --conf '{\"file_path\":\"${FILE_PATH}\",\"execution_date\":\"${EXECUTION_DATE}\"}'"
+                
+                echo "=== Running data_quality DAG ==="
+                docker exec -t airflow-worker sh -c "airflow dags test data_quality --conf '{\"execution_date\":\"${EXECUTION_DATE}\"}'"
+
+                echo "=== All E2E DAG tests completed successfully! ==="
+                
             - name: Tear down docker compose
               if: always() && steps.changed-files-tests.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
               run: |
