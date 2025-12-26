@@ -147,10 +147,18 @@ def save_to_json(extracted_data, **context):
 
     os.makedirs(data_dir, exist_ok=True)
 
-    filepath = f"/opt/airflow/data/YT_data_{execution_date}.json"
+    filepath = f"{data_dir}/YT_data_{execution_date}.json"
+
+    # DEBUG: Check the data
+    print(f"Type: {type(extracted_data)}")
+    print(f"Sample: {extracted_data[:1] if extracted_data else 'Empty'}")
     
     with open(filepath, "w", encoding="utf-8") as json_outfile:
         json.dump(extracted_data, json_outfile, indent=4, ensure_ascii=False)
+
+    # Verify the file is valid JSON immediately after writing
+    with open(filepath, "r", encoding="utf-8") as verify_file:
+        json.load(verify_file)  # This will fail if JSON is invalid
 
     return {
 
