@@ -85,7 +85,7 @@ with DAG(
             try:
                 trigger_dag(
                     dag_id="Update_db",
-                    run_id=f"triggered__{context['execution_date'].isoformat()}",
+                    run_id=f"triggered__{context['logical_date'].isoformat()}",
                     conf=conf,
                     execution_date=context['execution_date'],
                     replace_microseconds=False,

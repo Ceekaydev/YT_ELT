@@ -1,5 +1,6 @@
 import logging
 from airflow.operators.bash import BashOperator
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +23,11 @@ def yt_elt_data_quality(schema: str):
     checks_file = CHECKS_BY_SCHEMA[schema]
 
     try:
+
+        # Prepare environment variables for Soda
+        env_vars = os.environ.copy()
+        env_vars['SCHEMA'] = schema
+
         task = BashOperator(
             task_id = f'soda_test_{schema}',
             bash_command=(
@@ -31,6 +37,7 @@ def yt_elt_data_quality(schema: str):
                 f"-v SCHEMA={schema} "
                 f"{checks_file}"
             ),
+            env=env_vars,  # ✅ Add this line - passes all environment variables
         )
 
         return task
