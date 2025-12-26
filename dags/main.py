@@ -58,7 +58,7 @@ with DAG(
         ti = context['ti'] 
         
         # Pull the value pushed to XCom by the specified task ID
-        saved = ti.xcom_pull(task_ids='save_to_json_format_task') 
+        saved = ti.xcom_pull(task_ids='save_to_json') 
         
         # Check if the XCom value exists, raise an error if not
         if not saved:

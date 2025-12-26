@@ -4,7 +4,7 @@ import json
 # load_dotenv(dotenv_path="./.env")
 import os
 
-from datetime import date
+from datetime import datetime
 
 from airflow.decorators import task
 from airflow.models import Variable
@@ -144,7 +144,7 @@ def save_to_json(extracted_data, **context):
 
     os.makedirs("/opt/airflow/data", exist_ok=True)
 
-    filepath = f"./data/YT_data_{execution_date}.json"
+    filepath = f"/opt/airflow/data/YT_data_{execution_date}.json"
     
     with open(filepath, "w", encoding="utf-8") as json_outfile:
         json.dump(extracted_data, json_outfile, indent=4, ensure_ascii=False)
