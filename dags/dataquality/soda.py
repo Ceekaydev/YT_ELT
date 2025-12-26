@@ -37,7 +37,7 @@ def yt_elt_data_quality(schema: str):
                 f"-v SCHEMA={schema} "
                 f"{checks_file}"
             ),
-            env=env_vars,  # ✅ Add this line - passes all environment variables
+            env=env_vars,  # ✅ Add this line - passes all environment variablesdz
         )
 
         return task
