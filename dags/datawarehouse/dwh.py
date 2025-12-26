@@ -19,7 +19,7 @@ hf_call_count = 0
 def staging_table(**context):
 
     schema = "staging"
-    conf = json.loads(context["dag_run"].conf)
+    conf = context["dag_run"].conf
 
     if not conf or "file_path" not in conf:
         raise ValueError("file_path not provided from upstream DAG")
