@@ -6,6 +6,7 @@ from datawarehouse.data_loading import load_data
 import logging
 from airflow.decorators import task
 import os
+import json
 
 logger = logging.getLogger(__name__)
 table = "yt_api"
@@ -18,7 +19,7 @@ hf_call_count = 0
 def staging_table(**context):
 
     schema = "staging"
-    conf = context["dag_run"].conf
+    conf = json.loads(context["dag_run"].conf)
 
     if not conf or "file_path" not in conf:
         raise ValueError("file_path not provided from upstream DAG")
