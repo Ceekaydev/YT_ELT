@@ -71,7 +71,7 @@ This project builds an **end-to-end ELT pipeline** that:
 
 ## 🏗 Architecture Overview
 
-```text
+```
 YouTube API
    ↓
 Raw JSON (Bronze)
@@ -87,68 +87,73 @@ Soda Data Quality Checks
 Airflow DAGs
    ↓
 CI/CD (GitHub Actions)
-🛠 Tech Stack
-Language: Python
 
-API: YouTube Data API v3
+```
 
-Orchestration: Apache Airflow
+## 🛠 Tech Stack
+- Language: Python
 
-Warehouse: PostgreSQL
+- API: YouTube Data API v3
 
-Containerization: Docker & Docker Compose
+- Orchestration: Apache Airflow
 
-AI / NLP: HuggingFace Transformers
+- Warehouse: PostgreSQL
 
-Data Quality: Soda SQL
+- Containerization: Docker & Docker Compose
 
-Testing: Pytest
+- AI / NLP: HuggingFace Transformers
 
-CI/CD: GitHub Actions
+- Data Quality: Soda SQL
 
-⚙️ Pipeline Workflow
+- Testing: Pytest
+
+- CI/CD: GitHub Actions
+
+
+## ⚙️ Pipeline Workflow
+```
 Extract YouTube Data
-
+       ↓
 Fetch all video IDs from MrBeast channel
-
+       ↓
 Pull video metadata
-
+       ↓
 Save raw JSON
-
+       ↓
 Database Setup
-
+      ↓
 PostgreSQL initialized via Docker
-
+       ↓
 Staging and core tables created via hooks and cursors
-
+       ↓
 Transformation Layer
-
+       ↓
 Video duration → short / normal
-
+       ↓
 Title sentiment + sentiment score
-
+       ↓
 Timestamp normalization
-
+       ↓
 Modification Layer
-
+       ↓
 Insert, update, delete logic
-
+       ↓
 Uses row dictionaries returned from transformations
-
+       ↓
 Orchestration
-
+      ↓
 Tasks defined and grouped in Airflow DAGs
-
+       ↓
 Monitored via Airflow UI
-
+       ↓
 Data Quality Checks
-
+       ↓
 Soda scans executed post-load
 
-🗂 Airflow DAG Flow
-mermaid
-Copy code
-flowchart TD
+```
+## 🗂 Airflow DAG Flow
+
+### flowchart TD
     A[Trigger DAG] --> B[Extract YouTube API Data]
     B --> C[Save Raw JSON]
     C --> D[Load to PostgreSQL Staging]
@@ -160,30 +165,38 @@ flowchart TD
     H --> I[Soda Data Quality Scan]
     I --> J[Unit / Integration / E2E Tests]
     J --> K[DAG Success]
-📂 Project Structure
-text
-Copy code
+
+## 📂 Project Structure
+```
 .
 ├── dags/
-│   └── youtube_pipeline_dag.py
+    ├── api
+    │   ├── video_api.py
+│   └── main.py
 ├── datawarehousing/
 │   ├── data_utils.py          # DB hooks, connections, AI sentiment
 │   ├── data_loading.py        # API extraction & raw loading
 │   ├── transformation.py     # Business + AI transformations
 │   ├── modification.py       # Insert / update / delete logic
+├── data_quality/
+     ├── soda_testing.py
 ├── tests/
 │   ├── unit/
 │   ├── integration/
 │   ├── e2e/
 │   └── conftest.py
 ├── soda/
-│   └── checks.yml
+│   ├── staging_checks.yml
+    ├── corechecks.yml
 ├── docker-compose.yaml
 ├── Dockerfile
 ├── requirements.txt
 └── README.md
-🧪 Data Quality & Testing
-🔍 Soda Checks
+```
+
+## 🧪 Data Quality & Testing
+**🔍 Soda Checks**
+```
 No duplicate records
 
 No missing critical columns
@@ -191,54 +204,58 @@ No missing critical columns
 ≥ 90% sentiment scores not zero
 
 ≥ 90% titles not neutral
+```
 
-🧪 Testing Levels
-Unit Tests: DAG imports, mocks, DB connections
+**🧪 Testing Levels**
+- Unit Tests: DAG imports, mocks, DB connections
 
-Integration Tests: Real API & PostgreSQL
+- Integration Tests: Real API & PostgreSQL
 
-End-to-End Tests: Full pipeline execution via pytest
+- End-to-End Tests: Full pipeline execution via pytest
+- 
 
-🚀 CI/CD Workflow
-Implemented using GitHub Actions
+## 🚀 CI/CD Workflow
+```
+- Implemented using GitHub Actions
 
-Conditional workflows based on file changes:
+- Conditional workflows based on file changes:
 
-requirements.txt
+- requirements.txt
 
-DAGs
+- DAGs
 
-Soda configs
+- Soda configs
 
-Docker files
+- Docker files
 
-Supports manual workflow dispatch
+- Supports manual workflow dispatch
+```
 
-🔐 Environment & Secrets
-.env files are not committed
+## 🔐 Environment & Secrets
+- .env files are not committed
 
-Secrets stored in GitHub Secrets & Variables
+- Secrets stored in GitHub Secrets & Variables
 
-Referenced as:
-
+**Referenced as:**
+```
 yaml
 Copy code
 ${{ secrets.SECRET_NAME }}
 Docker Compose refactored to read from GitHub secrets
+```
+## ⚡ How to Run
+- Clone the repository
 
-⚡ How to Run
-Clone the repository
+- Run docker-compose up -d
 
-Run docker-compose up -d
+- Open Airflow UI at http://localhost:8080
 
-Open Airflow UI at http://localhost:8080
+- Trigger DAG
 
-Trigger DAG
+- Run pytest for validation
 
-Run pytest for validation
-
-✅ Final Outcome
-✔ End-to-end YouTube ELT pipeline
-✔ AI-enhanced analytics
-✔ Production-grade Airflow orchestration
-✔ Automated data quality & CI/CD
+## ✅ Final Outcome
+- ✔ End-to-end YouTube ELT pipeline
+- ✔ AI-enhanced analytics
+- ✔ Production-grade Airflow orchestration
+- ✔ Automated data quality & CI/CD
